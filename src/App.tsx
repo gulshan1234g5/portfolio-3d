@@ -10,6 +10,7 @@ import { TradingLab } from '@/sections/TradingLab';
 import { Experience } from '@/sections/Experience';
 import { Contact } from '@/sections/Contact';
 import { cn } from '@/lib/utils';
+import { ErrorBoundary, WebGLFallback, NetworkErrorFallback } from '@/components/ErrorBoundary';
 
 const LoadingFallback = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
@@ -29,7 +30,7 @@ const TradingLabSection = lazy(() => import('@/sections/TradingLab').then(m => (
 const ExperienceSection = lazy(() => import('@/sections/Experience').then(m => ({ default: m.Experience })));
 const ContactSection = lazy(() => import('@/sections/Contact').then(m => ({ default: m.Contact })));
 
-function App() {
+function AppContent() {
   return (
     <>
       <Navigation />
@@ -68,6 +69,16 @@ function App() {
       </main>
       <Footer />
     </>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary fallback={<NetworkErrorFallback />}>
+      <ErrorBoundary fallback={<WebGLFallback />}>
+        <AppContent />
+      </ErrorBoundary>
+    </ErrorBoundary>
   );
 }
 

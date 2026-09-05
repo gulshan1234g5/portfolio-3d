@@ -1,12 +1,58 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Suspense, lazy } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, MousePointer } from 'lucide-react';
 import { HeroCanvas } from '@/three/HeroScene';
 import { cn } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
+import ThreeDErrorBoundary from '@/components/ThreeDErrorBoundary';
+import { ThreeDFallback } from '@/components/ThreeDFallbacks';
+
+const Hero3DScene = lazy(() => import('@/three/HeroScene').then(m => ({ default: m.Hero3DScene })));
 
 export function Hero() {
+  const [threeReady, setThreeReady] = useState(false);
+  const [show3D, setShow3D] = useState(true);
+  const [showFallback, setShowFallback] = useState(false);
+  const [webglSupported, setWebglSupported] = useState<true | false | null>(null);
+
+  // WebGL capability check - runs immediately on mount
+  useEffect(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      if (!gl) {
+        setWebglSupported(false);
+        return;
+      }
+      
+      // Check for basic WebGL 2 features
+      const ext = gl.getExtension('OES_texture_float');
+      if (!ext) {
+        console.warn('WebGL float texture extension not supported');
+      }
+      setWebglSupported(true);
+    } catch (e) {
+      console.warn('WebGL check failed:', e);
+      setWebglSupported(false);
+    }
+  }, []);
+
+  // 5-second timeout for 3D initialization
+  useEffect(() => {
+    if (!show3D) return;
+    const timeout = setTimeout(() => {
+      if (show3D) {
+        console.log('[Hero] 3D timeout reached - disabling 3D');
+        setShow3D(false);
+        setShowFallback(true);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [show3D]);
+
   const reducedMotion = useReducedMotion();
 
   return (
@@ -15,32 +61,40 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       aria-label="Hero section"
     >
-      {/* 3D Canvas Background */}
+      {/* Premium CSS Fallback - Always rendered first */}
       <div className="absolute inset-0 z-0" aria-hidden="true">
-        <HeroCanvas />
+        {/* Premium CSS fallback - always visible, enhanced when 3D works */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-surface/50 to-background" />
+        <div className="absolute inset-0 z-5 opacity-5" aria-hidden="true">
+          <svg width="100%" height="100%" preserveAspectRatio="none">
+            <defs>
+              <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#00ff88" strokeWidth="0.5" opacity="0.1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+        
+        {/* Floating orbs for atmosphere */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" aria-hidden="true" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary/5 blur-3xl animate-float animation-delay-1000" aria-hidden="true" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-accent/5 blur-3xl animate-float animation-delay-2000" aria-hidden="true" />
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 z-5 opacity-5" aria-hidden="true">
+          <svg width="100%" height="100%" preserveAspectRatio="none">
+            <defs>
+              <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#00ff88" strokeWidth="0.5" opacity="0.1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
       </div>
 
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 z-5 bg-gradient-to-b from-background via-surface/50 to-background" />
-
-      {/* Floating orbs for atmosphere */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" aria-hidden="true" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary/5 blur-3xl animate-float animation-delay-1000" aria-hidden="true" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-accent/5 blur-3xl animate-float animation-delay-2000" aria-hidden="true" />
-
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 z-5 opacity-5" aria-hidden="true">
-        <svg width="100%" height="100%" preserveAspectRatio="none">
-          <defs>
-            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#00ff88" strokeWidth="0.5" opacity="0.1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
-
-      {/* Main content */}
+      {/* Main content - Always visible immediately */}
       <div className="relative z-10 section-container min-h-screen flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -191,6 +245,62 @@ export function Hero() {
           </div>
         </motion.div>
       </div>
+
+      {/* 3D Canvas - Loaded asynchronously, NEVER blocks the page */}
+<div className="absolute inset-0 z-0" aria-hidden="true">
+          {show3D && webglSupported ? (
+            <ThreeDErrorBoundary fallback={<ThreeDFallback onRetry={() => window.location.reload()} />}>
+              <Suspense fallback={null}>
+                <HeroCanvas 
+                  onCreated={() => {
+                    console.log('[Hero] WebGL canvas created successfully');
+                    setShowFallback(false);
+                  }}
+                />
+              </Suspense>
+            </ThreeDErrorBoundary>
+          ) : (
+          <>
+            {!webglSupported && <StaticHeroFallback />}
+            {!show3D && <StaticHeroFallback />}
+          </>
+        )}
+      </div>
     </section>
+  );
+}
+
+function StaticHeroFallback() {
+  return (
+    <div className="absolute inset-0 z-0" aria-hidden="true">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-surface/50 to-background" />
+      <div className="absolute inset-0 z-5 opacity-5" aria-hidden="true">
+        <svg width="100%" height="100%" preserveAspectRatio="none">
+          <defs>
+            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#00ff88" strokeWidth="0.5" opacity="0.1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+      </div>
+      
+      {/* Floating orbs for atmosphere */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" aria-hidden="true" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary/5 blur-3xl animate-float animation-delay-1000" aria-hidden="true" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-accent/5 blur-3xl animate-float animation-delay-2000" aria-hidden="true" />
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 z-5 opacity-5" aria-hidden="true">
+        <svg width="100%" height="100%" preserveAspectRatio="none">
+          <defs>
+            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#00ff88" strokeWidth="0.5" opacity="0.1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+      </div>
+    </div>
   );
 }
