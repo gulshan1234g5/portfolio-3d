@@ -1,0 +1,20 @@
+{
+  "name": "Gulshan Toppo — Creative Developer",
+  "short_name": "Gulshan Toppo",
+  "description": "Creative Developer · Automation Builder · Trading Systems Explorer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#030303",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer", "productivity", "finance"],
+  "prefer_related_applications": false
+}

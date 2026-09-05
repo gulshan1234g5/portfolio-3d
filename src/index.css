@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+
+@theme {
+  --color-background: #030303;
+  --color-surface: #0a0a0a;
+  --color-surface-elevated: #111111;
+  --color-border: #1a1a1a;
+  --color-border-light: #2a2a2a;
+  --color-primary: #00ff88;
+  --color-primary-dim: #00cc6a;
+  --color-secondary: #00d4ff;
+  --color-accent: #ff6b35;
+  --color-text: #fafafa;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #666666;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-background text-text font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  ::selection {
+    @apply bg-primary/30 text-text;
+  }
+  
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-surface/60 backdrop-blur-md border border-border/50;
+  }
+  
+  .glass-strong {
+    @apply bg-surface/80 backdrop-blur-lg border border-border/60;
+  }
+  
+  .glass-card {
+    @apply bg-surface/50 backdrop-blur-md border border-border/40 
+           hover:border-primary/20 hover:bg-surface/70 transition-all duration-500;
+  }
+  
+  .btn-primary {
+    @apply relative px-8 py-4 font-medium text-background bg-primary
+           hover:bg-primary-dim active:bg-primary-dim/90
+           rounded-lg overflow-hidden
+           transition-all duration-300 ease-out
+           hover:shadow-[0_0_60px_-10px_rgba(0,255,136,0.15)] active:scale-[0.98];
+  }
+  
+  .btn-secondary {
+    @apply relative px-8 py-4 font-medium text-text bg-surface-elevated border border-border
+           hover:border-primary/50 hover:bg-surface hover:text-primary
+           rounded-lg overflow-hidden
+           transition-all duration-300 ease-out
+           active:scale-[0.98];
+  }
+  
+  .btn-ghost {
+    @apply relative px-6 py-3 font-medium text-text-secondary
+           hover:text-primary hover:text-text
+           rounded-lg
+           transition-colors duration-200;
+  }
+  
+  .magnetic-btn {
+    @apply relative overflow-hidden;
+  }
+  
+  .magnetic-btn::before {
+    @apply content-[''] absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-secondary/20
+           opacity-0 transition-opacity duration-500;
+  }
+  
+  .magnetic-btn:hover::before {
+    @apply opacity-100;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-primary-dim to-secondary bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-warm {
+    @apply bg-gradient-to-r from-accent via-orange-500 to-primary bg-clip-text text-transparent;
+  }
+  
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
+  }
+  
+  .section-title {
+    @apply font-display text-display-lg font-bold text-text;
+  }
+  
+  .section-subtitle {
+    @apply text-text-secondary text-lg max-w-2xl mt-4;
+  }
+  
+  .badge {
+    @apply px-3 py-1 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full;
+  }
+  
+  .tag {
+    @apply px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-elevated border border-border rounded;
+  }
+  
+  .reveal-up {
+    @apply opacity-0 translate-y-12 transition-all duration-1000 ease-out;
+  }
+  
+  .reveal-up.visible {
+    @apply opacity-100 translate-y-0;
+  }
+  
+  .reveal-left {
+    @apply opacity-0 -translate-x-12 transition-all duration-1000 ease-out;
+  }
+  
+  .reveal-left.visible {
+    @apply opacity-100 translate-x-0;
+  }
+  
+  .reveal-right {
+    @apply opacity-0 translate-x-12 transition-all duration-1000 ease-out;
+  }
+  
+  .reveal-right.visible {
+    @apply opacity-100 translate-x-0;
+  }
+  
+  .reveal-scale {
+    @apply opacity-0 scale-95 transition-all duration-800 ease-out;
+  }
+  
+  .reveal-scale.visible {
+    @apply opacity-100 scale-100;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Syne', system-ui, sans-serif;
+  }
+  
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+  .animate-delay-600 {
+    animation-delay: 600ms;
+  }
+  .animate-delay-700 {
+    animation-delay: 700ms;
+  }
+  .animate-delay-800 {
+    animation-delay: 800ms;
+  }
+  .animate-delay-1000 {
+    animation-delay: 1000ms;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
