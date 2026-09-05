@@ -1,16 +1,109 @@
 'use client';
 
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars } from '@react-three/drei';
+import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
+import { Stars, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useReducedMotion, useIsMobile } from '@/hooks/useMediaQuery';
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-const HeroScene = ({ onCreated }: { onCreated: () => void }) => {
+const STAR_COUNT = 200;
+
+const StarField = ({ count = STAR_COUNT, reducedMotion }: { count?: number; reducedMotion: boolean }) => {
+  const pointsRef = useRef<THREE.Points>(null);
+  const timeRef = useRef(0);
+
+  useFrame((state, delta) => {
+    if (reducedMotion) return;
+    timeRef.current += delta;
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y += delta * 0.002;
+      pointsRef.current.rotation.x += delta * 0.001;
+    }
+  });
+
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+
+  for (let i = 0; i < count; i++) {
+    const radius = 50 + Math.random() * 100;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+
+    positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+    positions[i * 3 + 2] = radius * Math.cos(phi);
+
+    const color = new THREE.Color('#00ff88');
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+
+    sizes[i] = Math.random() * 2 + 0.5;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const material = new THREE.PointsMaterial({
+    size: 1,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.15,
+    sizeAttenuation: true,
+    depthWrite: false,
+  });
+
+  return <points ref={pointsRef} geometry={geometry} material={material} />;
+};
+
+const Icosahedron = ({ reducedMotion }: { reducedMotion: boolean }) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const timeRef = useRef(0);
+  const [hovered, setHovered] = useState(false);
+
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+    if (!meshRef.current) return;
+
+    if (!reducedMotion) {
+      meshRef.current.rotation.x += delta * 0.1;
+      meshRef.current.rotation.y += delta * 0.15;
+      meshRef.current.position.y = Math.sin(timeRef.current * 0.5) * 0.3;
+    }
+
+    if (hovered && !reducedMotion) {
+      meshRef.current.scale.setScalar(lerp(meshRef.current.scale.x, 1.1, delta * 5));
+    } else {
+      meshRef.current.scale.setScalar(lerp(meshRef.current.scale.x, 1, delta * 5));
+    }
+  });
+
+  return (
+    <mesh
+      ref={meshRef}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
+      <icosahedronGeometry args={[2.5, 2]} />
+      <meshStandardMaterial
+        color="#00ff88"
+        metalness={0.9}
+        roughness={0.1}
+        emissive="#00ff88"
+        emissiveIntensity={0.1}
+      />
+    </mesh>
+  );
+};
+
+const HeroScene = ({ onCreated, isVisible }: { onCreated: () => void; isVisible: boolean }) => {
   const { camera } = useThree();
   const reducedMotion = useReducedMotion();
 
@@ -30,6 +123,8 @@ const HeroScene = ({ onCreated }: { onCreated: () => void }) => {
   }, []);
 
   useFrame((state, delta) => {
+    if (!isVisible) return;
+    
     timeRef.current += delta;
 
     targetRef.current.x = lerp(targetRef.current.x, mouseRef.current.x * 0.5, 0.05);
@@ -49,14 +144,8 @@ const HeroScene = ({ onCreated }: { onCreated: () => void }) => {
 
   return (
     <group ref={groupRef}>
-      <mesh>
-        <icosahedronGeometry args={[2.5, 2]} />
-        <meshStandardMaterial
-          color="#00ff88"
-          metalness={0.9}
-          roughness={0.1}
-        />
-      </mesh>
+      <Icosahedron reducedMotion={reducedMotion} />
+      <StarField count={STAR_COUNT} reducedMotion={reducedMotion} />
 
       <pointLight
         color="#00ff88"
@@ -79,6 +168,21 @@ const HeroScene = ({ onCreated }: { onCreated: () => void }) => {
 export function HeroCanvas({ onCreated }: { onCreated: () => void }) {
   const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: '100px', threshold: 0 }
+    );
+
+    const canvas = document.querySelector('canvas');
+    if (canvas) observer.observe(canvas);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Canvas
@@ -91,7 +195,7 @@ export function HeroCanvas({ onCreated }: { onCreated: () => void }) {
         failIfMajorPerformanceCaveat: false,
       }}
       shadows={false}
-      dpr={isMobile ? [1, 1.2] : [1, 1.5]}
+      dpr={[1, 2]}
       className="fixed inset-0 -z-10"
       onCreated={() => {
         console.log('[Hero] Canvas ready');
@@ -107,10 +211,31 @@ export function HeroCanvas({ onCreated }: { onCreated: () => void }) {
         intensity={2}
         color="#ffffff"
       />
+      <directionalLight
+        position={[-10, -10, -10]}
+        intensity={0.5}
+        color="#00ff88"
+      />
 
-      <HeroScene onCreated={onCreated} />
+      <HeroScene onCreated={onCreated} isVisible={isVisible} />
 
-      <Stars radius={100} depth={50} count={100} saturation={0} factor={4} color="#00ff88" opacity={0.1} />
+      <Html
+        as="div"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        <style jsx>{`
+          @media (prefers-reduced-motion: reduce) {
+            * {
+              animation-duration: 0.01ms !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
+        `}</style>
+      </Html>
     </Canvas>
   );
 }

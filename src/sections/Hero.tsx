@@ -7,12 +7,22 @@ import { cn } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import ThreeDErrorBoundary from '@/components/ThreeDErrorBoundary';
 import { ThreeDFallback } from '@/components/ThreeDFallbacks';
+import { SEO, JSONLD } from '@/components/SEO';
 
 const HeroCanvas = lazy(() =>
   import('@/three/HeroScene').then(m => ({
     default: m.HeroCanvas
   }))
 );
+
+const heroJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@id': 'https://gulshan1234g5.github.io/portfolio-3d/#person'
+  },
+  description: 'Gulshan Toppo — Creative Developer, Automation Builder, Trading Systems Explorer. Building digital experiences that feel alive.'
+};
 
 export function Hero() {
   const [show3D, setShow3D] = useState(true);
@@ -52,11 +62,20 @@ export function Hero() {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section 
-      id="hero" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      aria-label="Hero section"
-    >
+    <>
+      <SEO
+        title="Gulshan Toppo — Creative Developer & Automation Builder"
+        description="Creative Developer, Automation Builder, Trading Systems Explorer. Building digital experiences that feel alive with React, Three.js, and modern web technologies."
+        image="/portfolio-3d/og-image.png"
+        url="https://gulshan1234g5.github.io/portfolio-3d/"
+        type="profile"
+      />
+      <JSONLD data={heroJsonLd} />
+      <section 
+        id="hero" 
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        aria-label="Hero section"
+      >
       {/* Premium CSS Fallback - Always rendered first */}
       <div className="absolute inset-0 z-0" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-surface/50 to-background" />
@@ -236,5 +255,6 @@ export function Hero() {
         ) : null}
       </div>
     </section>
+    </>
   );
 }

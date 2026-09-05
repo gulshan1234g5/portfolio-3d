@@ -1,0 +1,42 @@
+{
+  "name": "Gulshan Toppo Portfolio",
+  "short_name": "Gulshan Toppo",
+  "description": "Creative Developer, Automation Builder, Trading Systems Explorer. Building digital experiences that feel alive.",
+  "start_url": "/portfolio-3d/",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#030303",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/portfolio-3d/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/portfolio-3d/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "apple touch icon"
+    }
+  ],
+  "categories": ["developer", "portfolio", "technology"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "description": "View my projects",
+      "url": "/portfolio-3d/#projects",
+      "icons": [{ "src": "/portfolio-3d/favicon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "/portfolio-3d/#contact",
+      "icons": [{ "src": "/portfolio-3d/favicon.svg", "sizes": "96x96" }]
+    }
+  ]
+}
