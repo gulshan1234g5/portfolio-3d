@@ -316,6 +316,7 @@ export function Contact() {
                     <div>
                       <p className="text-sm text-text-secondary">Connect on {social.label}</p>
                       <p className="font-medium text-text">{social.label}</p>
+                    </div>
                     <svg className="h-5 w-5 text-text-muted group-hover:text-primary transition-colors ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>

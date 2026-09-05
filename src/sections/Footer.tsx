@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Mail, Github, Twitter, Linkedin, Heart, Code, Zap, Cube, TrendingUp } from 'lucide-react';
+import { Mail, Github, Twitter, Linkedin, Heart, Code, Zap, Box, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { socialLinks } from '@/data/portfolio';
 
@@ -197,7 +197,7 @@ export function Footer() {
               transition={{ delay: 1.4, duration: 0.4 }}
               className="flex items-center gap-2 text-text-secondary text-sm"
             >
-              <Cube className="h-4 w-4 text-secondary" aria-hidden="true" />
+              <Box className="h-4 w-4 text-secondary" aria-hidden="true" />
               <span>3D powered</span>
             </motion.div>
 

@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Code, Bot, Cube, Terminal, TrendingUp, Bot as BotIcon, Layers, Globe } from 'lucide-react';
+import { Code, Bot, Globe, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { projects, skills, services, experience, socialLinks } from '@/data/portfolio';
+import { skills, experience } from '@/data/portfolio';
 
 export function About() {
   return (
@@ -23,9 +23,9 @@ export function About() {
             <span className="text-gradient">That Feel Alive</span>
           </h2>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto leading-relaxed">
-            I'm Gulshan Toppo, a creative developer and automation builder passionate about 
-            crafting digital experiences that push the boundaries of what's possible on the web. 
-            With a background in algorithmic trading systems and full-stack development, 
+            I'm Gulshan Toppo, a creative developer and automation builder passionate about
+            crafting digital experiences that push the boundaries of what's possible on the web.
+            With a background in algorithmic trading systems and full-stack development,
             I specialize in building high-performance, visually stunning applications.
           </p>
         </motion.div>
@@ -33,8 +33,8 @@ export function About() {
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {[
             { icon: Code, title: 'Full-Stack Development', desc: 'Modern web apps with React, Next.js, Node.js & TypeScript' },
-            { icon: BotIcon, title: 'Automation Systems', desc: 'Workflow automation, document processing & orchestration' },
-            { icon: Cube, title: '3D Web Experiences', desc: 'Immersive WebGL, Three.js, custom shaders & WebGL' },
+            { icon: Bot, title: 'Automation Systems', desc: 'Workflow automation, document processing & orchestration' },
+            { icon: Box, title: '3D Web Experiences', desc: 'Immersive WebGL, Three.js, custom shaders & WebGL' },
           ].map((item, i) => (
             <motion.div
               key={item.title}
@@ -85,8 +85,8 @@ export function About() {
                   </div>
                   <p className="text-text-secondary">{item}</p>
                 </motion.div>
-              )),
-            )}
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

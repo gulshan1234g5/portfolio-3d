@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, Shield, Target, Zap, BarChart2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Shield, Target, Zap, BarChart2, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TradingCard {
@@ -95,7 +95,7 @@ export function TradingLab() {
           className="max-w-3xl mx-auto text-center mb-16"
         >
           <span className="badge mb-4">Trading & Automation Lab</span>
-          <h2 className="font-display text-display-lg font-bold text-text mb-6">
+          <h2 className="font-['Syne'] text-display-lg font-bold text-text mb-6">
             Trading & Automation
             <br />
             <span className="text-gradient">Lab</span>
@@ -115,65 +115,69 @@ export function TradingLab() {
             transition={{ duration: 0.3 }}
             className="mb-16"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.4 }}
-              className="glass-card p-8 md:p-12 relative overflow-hidden"
-            >
-              <motion.button
-                onClick={() => setActiveCard(null)}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-surface/50 hover:bg-surface hover:border-border/50 border border-border/30 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Close detail view"
-              >
-                <svg className="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </motion.button>
+            {tradingCards.map(card => {
+              if (card.id !== activeCard) return null;
+              return (
+                <motion.div
+                  key={card.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.4 }}
+                  className="glass-card p-8 md:p-12 relative overflow-hidden"
+                >
+                  <motion.button
+                    onClick={() => setActiveCard(null)}
+                    className="absolute top-4 right-4 p-2 rounded-lg bg-surface/50 hover:bg-surface hover:border-border/50 border border-border/30 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Close detail view"
+                  >
+                    <svg className="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </motion.button>
 
-              {tradingCards.map(card => {
-                if (card.id !== activeCard) return null;
-                return (
-                  <motion.div key={card.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}>
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className={cn('w-16 h-16 rounded-2xl flex items-center justify-center', `bg-${card.color.replace('text-', 'bg-')}/10 border border-${card.color.replace('text-', 'border-')}/20`)}>
-                        <span className="w-8 h-8">{card.icon}</span>
-                      </div>
-                      <div>
-                        <h3 className="font-display text-2xl font-bold text-text">{card.title}</h3>
-                        <p className="text-text-secondary mt-1">{card.description}</p>
-                      </div>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className={cn(
+                      'w-16 h-16 rounded-2xl flex items-center justify-center',
+                      `bg-${card.color.replace('text-', 'bg-')}/10 border border-${card.color.replace('text-', 'border-')}/20`
+                    )}>
+                      <span className="w-8 h-8">{card.icon}</span>
                     </div>
-
-                    <div className="grid md:grid-cols-3 gap-4 mb-8">
-                      {card.metrics.map((metric, i) => (
-                        <motion.div
-                          key={metric.label}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="glass-card p-6 text-center"
-                        >
-                          <div className="font-display text-3xl font-bold text-text mb-1">{metric.value}</div>
-                          <div className="text-sm text-text-secondary">{metric.label}</div>
-                        </motion.div>
-                      ))}
+                    <div>
+                      <h3 className="font-['Syne'] text-2xl font-bold text-text">{card.title}</h3>
+                      <p className="text-text-secondary mt-1">{card.description}</p>
                     </div>
+                  </div>
 
-                    <motion.button
-                      onClick={() => setActiveCard(null)}
-                      className="btn-secondary w-full md:w-auto"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Back to Overview
-                    </motion.button>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
+                  <div className="grid md:grid-cols-3 gap-4 mb-8">
+                    {card.metrics.map((metric, i) => (
+                      <motion.div
+                        key={metric.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05, duration: 0.4 }}
+                        className="glass-card p-6 text-center"
+                      >
+                        <div className="font-['Syne'] text-3xl font-bold text-text mb-1">{metric.value}</div>
+                        <div className="text-sm text-text-secondary">{metric.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.button
+                    onClick={() => setActiveCard(null)}
+                    className="btn-secondary w-full md:w-auto"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Back to Overview
+                  </motion.button>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        )}
 
         {/* Cards Grid */}
         <motion.div
@@ -212,7 +216,7 @@ export function TradingLab() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.4 }}
-                  className="font-display text-xl font-bold text-text mb-3"
+                  className="font-['Syne'] text-xl font-bold text-text mb-3"
                 >
                   {card.title}
                 </motion.h3>
@@ -238,7 +242,7 @@ export function TradingLab() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 + j * 0.05, duration: 0.4 }}
-                      className="flex items-center justify-between p-3 rounded-lg bg-surface/50 border border-border/30 group-hover:border-primary/20 transition-colors"
+                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50 group-hover:border-primary/20 transition-colors"
                     >
                       <span className="text-sm text-text-secondary">{metric.label}</span>
                       <span className="font-mono font-semibold text-text">{metric.value}</span>
@@ -246,7 +250,6 @@ export function TradingLab() {
                   ))}
                 </motion.div>
 
-                {/* Hover glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-xl" />
               </motion.article>
             ))}
